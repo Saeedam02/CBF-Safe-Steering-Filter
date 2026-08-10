@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cbf-safe-steering"
+version = "1.0.0"
+description = "A visual high-order Control Barrier Function safety filter for collision-free steering."
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [{name = "Saeed Aghamohammadi"}]
+dependencies = [
+  "numpy>=1.24",
+  "matplotlib>=3.7",
+  "pillow>=9.4",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.4"]
+
+[project.scripts]
+cbf-steering-demo = "cbf_safe_steering.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+addopts = "-q"
