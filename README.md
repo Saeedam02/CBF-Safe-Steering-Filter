@@ -648,3 +648,17 @@ These references are strongly recommended if you want the formal definitions of 
 ## License
 
 MIT License. See [`LICENSE`](LICENSE).
+
+## Communication & Interaction
+
+Questions, feedback, bug reports, or ideas for extending this are welcome
+— especially anything pushing toward the "Ideas for extending it" list
+above.
+
+- **Open an issue** on this repo for bugs, questions, or feature requests
+- **Pull requests** are welcome
+- **Email**: saeedaghamohammadi99@gmail.com — for collaboration or research-related questions
+
+If this project was useful or interesting, a star on the repo is always
+appreciated.
+
