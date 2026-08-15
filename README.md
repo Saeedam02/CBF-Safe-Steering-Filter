@@ -352,21 +352,20 @@ The values above are reproducible by running `python demo.py --scenario straight
 The nominal controller is intentionally simple and obstacle-blind. It points the vehicle toward the goal:
 
 $$
-\psi_d=\operatorname{atan2}(y_g-y,x_g-x),
+\psi_d=\mathrm{atan2}(y_g-y,x_g-x),
 $$
 
 $$
-e_\psi=\operatorname{wrap}(\psi_d-\psi),
+e_\psi=\mathrm{wrap}(\psi_d-\psi),
 $$
 
 $$
-\omega_{nom}=\operatorname{sat}(k_\psi e_\psi,\,-\omega_{max},\omega_{max}).
+\omega_{nom}=\mathrm{sat}(k_\psi e_\psi,\,-\omega_{max},\omega_{max}).
 $$
 
 This is not presented as a high-performance autonomous-driving controller. It is deliberately imperfect so the effect of the safety wrapper is obvious.
 
 A major point of the project is that the CBF layer can later wrap a better controller without changing the safety-filter architecture.
-
 ---
 
 ## 10. Safety guarantee and assumptions
