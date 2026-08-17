@@ -1,5 +1,9 @@
 # Control Barrier Functions — A Provably-Safe Steering Filter
 
+[![CI](https://github.com/Saeedam02/CBF-Safe-Steering-Filter/actions/workflows/ci.yml/badge.svg)](https://github.com/Saeedam02/CBF-Safe-Steering-Filter/actions/workflows/ci.yml)
+![Python](https://img.shields.io/badge/python-3.10%2B-blue)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 <p align="center">
   <b>Wrap an ordinary driving controller with a real-time HOCBF quadratic program that intervenes only when safety requires it.</b>
 </p>
@@ -275,6 +279,8 @@ There is one CBF inequality per obstacle.
 
 Because this demo has only **one scalar decision variable**, each affine inequality trims the allowable yaw rates to an interval. The exact QP solution is therefore the Euclidean projection of \(\omega_{nom}\) onto the intersection of all feasible intervals. The implementation solves this analytically, which is mathematically equivalent to sending this one-dimensional problem to a generic QP solver but is dramatically easier to inspect.
 
+The solver also distinguishes between **limiting constraints** (obstacles that define the final lower or upper feasible yaw-rate bound) and **active constraints** (constraints whose residual is approximately zero at the returned optimum). This avoids calling every intermediate interval-tightening constraint “binding.”
+
 <p align="center">
   <img src="assets/generated/straight_qp_snapshot.png" alt="QP objective and feasible interval" width="800">
 </p>
@@ -366,6 +372,7 @@ $$
 This is not presented as a high-performance autonomous-driving controller. It is deliberately imperfect so the effect of the safety wrapper is obvious.
 
 A major point of the project is that the CBF layer can later wrap a better controller without changing the safety-filter architecture.
+
 ---
 
 ## 10. Safety guarantee and assumptions
@@ -434,11 +441,20 @@ CBF-Safe-Steering-Filter/
 │       ├── simulation.py
 │       ├── utils.py
 │       └── visualization.py
+├── .github/
+│   └── workflows/
+│       └── ci.yml
 ├── tests/
 │   ├── test_cbf.py
+│   ├── test_controllers.py
+│   ├── test_models.py
 │   ├── test_qp.py
 │   └── test_simulation.py
 ├── demo.py
+├── CITATION.cff
+├── CHANGELOG.md
+├── RELEASE_CHECKLIST.md
+├── ROADMAP.md
 ├── pyproject.toml
 ├── requirements.txt
 ├── REFERENCES.bib
@@ -515,14 +531,31 @@ pytest
 
 The tests verify, among other things:
 
-- the barrier sign inside and outside the safe set,
+- the barrier sign on, inside, and outside the safe set,
 - the analytic first derivative against a finite-difference check,
-- exact scalar-QP projection behavior,
-- infeasibility detection,
-- steering saturation,
+- the affine HOCBF constraint against the expanded second-derivative formula,
+- exact scalar-QP projection behavior, tied active constraints, and conflicting bounds,
+- randomized feasible QPs satisfying every hard constraint,
+- steering/yaw-rate saturation and angle wrapping,
 - the default nominal controller colliding,
 - the HOCBF-filtered controller avoiding physical collision,
-- the safety filter actually becoming active.
+- all checked-in scenarios producing finite, actuator-consistent traces,
+- the default safety result remaining stable under a smaller sampling period.
+
+Run the same coverage check used by CI with:
+
+```bash
+pytest --cov=cbf_safe_steering --cov-report=term-missing --cov-fail-under=90
+```
+
+The CI coverage threshold focuses on the numerical/control core; plotting and CLI glue are excluded from the coverage denominator.
+
+For reproducible local linting and formatting:
+
+```bash
+ruff check --fix src tests scripts demo.py
+black src tests scripts demo.py
+```
 
 ---
 
@@ -591,7 +624,7 @@ For example, conflicts can occur when:
 - margins are too conservative,
 - two obstacle constraints demand incompatible turns.
 
-The implementation reports infeasibility instead of secretly adding safety slack. In an actual safety architecture one might combine braking, steering, predictive safety constraints, robust margins, or a supervisory emergency mode.
+The implementation reports infeasibility instead of secretly adding safety slack. When the hard QP is infeasible, the simulator returns a **best-effort diagnostic command only so the run can continue and expose the failed assumption**; that fallback command is not a certified safety action, and the formal HOCBF guarantee no longer applies. In an actual safety architecture one might combine braking, steering, predictive safety constraints, robust margins, or a supervisory emergency mode.
 
 ---
 
@@ -618,7 +651,7 @@ If longitudinal acceleration, steering rate, or several independent control inpu
 
 ## 19. Extensions
 
-Good next steps for this project include:
+Good next steps for this project are tracked in [`ROADMAP.md`](ROADMAP.md). The first major-version target is:
 
 1. **Joint braking + steering QP** — optimize acceleration and yaw rate together.
 2. **Moving obstacles** — include obstacle velocity in the barrier derivatives.
@@ -644,20 +677,27 @@ These references are strongly recommended if you want the formal definitions of 
 
 ---
 
+## 21. Reproducibility, releases, and citation
+
+Continuous integration runs the test suite on Python 3.10–3.14 and enforces a coverage threshold for the numerical/control core. Development tooling is configured in `pyproject.toml` for reproducible Ruff and Black checks.
+
+For research or teaching use, citation metadata is provided in [`CITATION.cff`](CITATION.cff). The intended first tagged release is `v1.0.0`; [`CHANGELOG.md`](CHANGELOG.md) summarizes its contents, [`RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md) lists the validation and archival steps, and [`ROADMAP.md`](ROADMAP.md) specifies the proposed v2 joint-braking-and-steering formulation.
+
+After the tagged release is archived with Zenodo, add the minted DOI to both `CITATION.cff` and this section. A DOI should not be invented before the archive exists.
+
+---
+
 ## License
 
 MIT License. See [`LICENSE`](LICENSE).
 
+
 ## Communication & Interaction
 
-Questions, feedback, bug reports, or ideas for extending this are welcome
-— especially anything pushing toward the "Ideas for extending it" list
-above.
+Questions, feedback, bug reports, and ideas for extending the project are welcome.
 
-- **Open an issue** on this repo for bugs, questions, or feature requests
-- **Pull requests** are welcome
-- **Email**: saeedaghamohammadi99@gmail.com — for collaboration or research-related questions
+- **Open an issue** for bugs, questions, or feature requests.
+- **Pull requests** are welcome.
+- **Email:** saeedaghamohammadi99@gmail.com for collaboration or research-related questions.
 
-If this project was useful or interesting, a star on the repo is always
-appreciated.
-
+If this project was useful or interesting, a star on the repository is appreciated.
