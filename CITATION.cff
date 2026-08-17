@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: "If you use this software in research or teaching, please cite it using the metadata below."
+title: "CBF-Safe-Steering-Filter: A Provably-Safe Steering Filter"
+type: software
+authors:
+  - family-names: "Aghamohammadi"
+    given-names: "Saeed"
+version: 1.0.0
+license: MIT
+repository-code: "https://github.com/Saeedam02/CBF-Safe-Steering-Filter"
+url: "https://github.com/Saeedam02/CBF-Safe-Steering-Filter"
+abstract: >-
+  A visual Python implementation of a second-order High-Order Control Barrier
+  Function safety filter that minimally modifies a nominal yaw-rate command by
+  solving an exact one-dimensional hard-constrained quadratic program.
+keywords:
+  - control barrier functions
+  - HOCBF
+  - autonomous vehicles
+  - quadratic programming
+  - robotics
+  - safety-critical control
